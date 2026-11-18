@@ -49,10 +49,10 @@ public class MainActivity extends Activity {
     while((n=in.read(buf))!=-1)out.write(buf,0,n);in.close();c.disconnect();
     JSONObject json=new JSONObject(out.toString("UTF-8"));
     String tag=json.optString("tag_name","").replaceFirst("^v","");
-    String url=json.optString("html_url","");
-    if(newer(tag,"0.1.0") && url.startsWith("https://github.com/"))runOnUiThread(()->new android.app.AlertDialog.Builder(this)
+    String url=json.optString("html_url","");\n    org.json.JSONArray assets=json.optJSONArray("assets");\n    if(assets!=null)for(int i=0;i<assets.length();i++){JSONObject a=assets.optJSONObject(i);if(a!=null&&"veyra.apk".equals(a.optString("name"))){url=a.optString("browser_download_url",url);break;}}\n    final String downloadUrl=url;\n    String installed=getPackageManager().getPackageInfo(getPackageName(),0).versionName;
+    if(newer(tag,installed) && downloadUrl.startsWith("https://github.com/"))runOnUiThread(()->new android.app.AlertDialog.Builder(this)
      .setTitle("Atualização disponível").setMessage("Veyra "+tag+" está disponível. Abrir página para baixar?")
-     .setNegativeButton("Depois",null).setPositiveButton("Baixar",(d,w)->startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(url)))).show());
+     .setNegativeButton("Depois",null).setPositiveButton("Baixar",(d,w)->startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(downloadUrl)))).show());
    }catch(Exception ignored){}
   }).start();
  }
